@@ -39,81 +39,70 @@ public class QuestionService {
     public Map<String, String> saveQuestion(NewQuestionDTO newquestion) {
         newquestion.setQuestionTitle(newquestion.getQuestionTitle().strip());
         newquestion.setQuestionDescription(newquestion.getQuestionDescription().strip());
-
-        var questionFromDB = questionRepository.findByQuestionTitle(newquestion.getQuestionTitle());
-        if (questionFromDB != null) {
-            return Map.of("message", "question already exist");
+        Question questionStored = questionRepository.findByQuestionTitle(newquestion.getQuestionTitle());
+        if (questionStored != null) {
+            return Map.of("message", "failure - question already exists");
         }
-
         if (newquestion.getTags() == null) {
             newquestion.setTags(new ArrayList<>());
         }
-
-        var questionTags = checkTags(newquestion.getTags());
+        List<Tag> questionTags = checkTags(newquestion.getTags());
         if (questionTags == null) {
-            return Map.of("message", "invalid tags list");
+            return Map.of("message", "failure - no tags provided");
         }
-
-        var question = new Question();
+        Question question = new Question();
         question.setQuestionTitle(newquestion.getQuestionTitle());
         question.setQuestionDescription(newquestion.getQuestionDescription());
         question.setTags(questionTags);
-
         if (question.getReviews() == null) {
             question.setReviews(new ArrayList<>());
         }
-
         questionRepository.save(question);
         return Map.of("message", "success");
     }
 
     @Transactional
     public Map<String, String> updateQuestion(long id, UpdateQuestionDTO updatequestion) {
-        var questionFromDB = questionRepository.findById(id).orElse(null);
-        if (questionFromDB == null) {
-            return Map.of("message", "no such question");
+        Question questionStored = questionRepository.findById(id).orElse(null);
+        if (questionStored == null) {
+            return Map.of("message", "failure - no such question");
         }
-
         if (updatequestion.getQuestionDescription() != null) {
-            questionFromDB.setQuestionDescription(updatequestion.getQuestionDescription());
+            questionStored.setQuestionDescription(updatequestion.getQuestionDescription());
         }
-
         if (updatequestion.getTags() != null) {
-            var questionTags = checkTags(updatequestion.getTags());
+            List<Tag> questionTags = checkTags(updatequestion.getTags());
             if (questionTags == null) {
-                return Map.of("message", "some tags are incorrect");
+                return Map.of("message", "failure - some tags are incorrect");
             }
-            questionFromDB.setTags(questionTags);
+            questionStored.setTags(questionTags);
         }
-
-        questionRepository.save(questionFromDB);
+        questionRepository.save(questionStored);
         return Map.of("message", "success");
     }
 
     @Transactional
     public Map<String, String> updateQuestionRating(long id, boolean flag){
-        var questionFromDB = questionRepository.findById(id).orElse(null);
-        if (questionFromDB == null) {
-            return Map.of("message", "no such question");
+        Question questionStored = questionRepository.findById(id).orElse(null);
+        if (questionStored == null) {
+            return Map.of("message", "failure - no such question");
         }
-
         if(flag){
-            questionFromDB.setRating(questionFromDB.getRating()+1);
+            questionStored.setRating(questionStored.getRating()+1);
         }
         else {
-            questionFromDB.setRating(questionFromDB.getRating()-1);
+            questionStored.setRating(questionStored.getRating()-1);
         }
-
-        questionRepository.save(questionFromDB);
+        questionRepository.save(questionStored);
         return Map.of("message", "success");
     }
 
     private List<Tag> checkTags(List<Long> tags) {
         List<Tag> questionTags = new ArrayList<>();
-        for (var tagId : tags) {
-            var tagFromDB = tagRepository.findById(tagId).orElse(null);
-            questionTags.add(tagFromDB);
-            if (tagFromDB == null) {
+        for (long tagId : tags) {
+            Tag tagStored = tagRepository.findById(tagId).orElse(null);
+            questionTags.add(tagStored);
+            if (tagStored == null) {
                 return null;
             }
         }

@@ -38,5 +38,6 @@ public class Question {
     List<Tag> tags;
 
     @OneToMany
+    @JoinColumn(name = "question_id")
     List<Review> reviews = new ArrayList<>();
 }

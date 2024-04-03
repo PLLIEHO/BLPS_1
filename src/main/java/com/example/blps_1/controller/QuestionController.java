@@ -4,8 +4,6 @@ import com.example.blps_1.DTO.NewQuestionDTO;
 import com.example.blps_1.DTO.UpdateQuestionDTO;
 import com.example.blps_1.model.Question;
 import com.example.blps_1.service.QuestionService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;

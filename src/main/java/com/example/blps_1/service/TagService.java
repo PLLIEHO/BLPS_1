@@ -25,23 +25,19 @@ public class TagService {
     }
 
     public Tag findById(long id) {
-        var tag = tagRepository.findById(id);
-        return tag.orElse(new Tag());
+        return tagRepository.findById(id).orElse(new Tag());
     }
 
     @Transactional
     public Map<String, String> saveTag(Tag tag) {
         tag.setName(tag.getName().strip());
-
-        var tagFromDB = tagRepository.findByName(tag.getName());
-        if (tagFromDB != null) {
-            return Map.of("message", "tag already exist");
+        Tag tagStored = tagRepository.findByName(tag.getName());
+        if (tagStored != null) {
+            return Map.of("message", "failure - tag already exists");
         }
-
         if (tag.getQuestions() == null) {
             tag.setQuestions(new ArrayList<>());
         }
-
         tagRepository.save(tag);
         return Map.of("message", "success");
     }

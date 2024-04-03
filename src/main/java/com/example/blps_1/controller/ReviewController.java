@@ -16,8 +16,8 @@ public class ReviewController {
         this.reviewService = reviewService;
     }
 
-    @PostMapping("/{rid}")
-    public Map<String, String> addNewReview(@PathVariable("rid") long id, @Valid @RequestBody Review review) {
+    @PostMapping
+    public Map<String, String> addNewReview(@PathVariable("id") long id, @Valid @RequestBody Review review) {
         return reviewService.saveReview(id, review);
     }
 
